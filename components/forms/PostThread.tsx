@@ -19,7 +19,6 @@ import { Textarea } from "../ui/textarea";
 // import { updateUser } from "@/lib/actions/user.actions";
 import { usePathname, useRouter } from "next/navigation";
 import { createThread } from "@/lib/actions/thread.actions";
-import { getRandomValues } from "crypto";
 
 interface Props {
   user: {
@@ -52,7 +51,7 @@ function PostThread({ userId }: { userId: string }) {
       communityId: null,
       path: pathname,
     });
-    router.push('/')
+    router.push("/");
   };
 
   return (
