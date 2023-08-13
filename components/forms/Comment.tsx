@@ -1,23 +1,24 @@
 "use client";
+
+import { z } from "zod";
+import Image from "next/image";
+import { useForm } from "react-hook-form";
+import { usePathname } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+
 import { CommentValidation } from "@/lib/validations/thread";
-import * as z from "zod";
-// import { updateUser } from "@/lib/actions/user.actions";
-import { usePathname, useRouter } from "next/navigation";
-import { addCommentToThread, createThread } from "@/lib/actions/thread.actions";
-import Image from "next/image";
+import { addCommentToThread } from "@/lib/actions/thread.actions";
 
 interface Props {
   threadId: string;
@@ -25,11 +26,10 @@ interface Props {
   currentUserId: string;
 }
 
-const Comment = ({ threadId, currentUserImg, currentUserId }: Props) => {
-  const router = useRouter();
+function Comment({ threadId, currentUserImg, currentUserId }: Props) {
   const pathname = usePathname();
 
-  const form = useForm({
+  const form = useForm<z.infer<typeof CommentValidation>>({
     resolver: zodResolver(CommentValidation),
     defaultValues: {
       thread: "",
@@ -43,11 +43,13 @@ const Comment = ({ threadId, currentUserImg, currentUserId }: Props) => {
       JSON.parse(currentUserId),
       pathname
     );
+
     form.reset();
   };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="comment-form">
+      <form className="comment-form" onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="thread"
@@ -56,7 +58,7 @@ const Comment = ({ threadId, currentUserImg, currentUserId }: Props) => {
               <FormLabel>
                 <Image
                   src={currentUserImg}
-                  alt="Profile Image"
+                  alt="current_user"
                   width={48}
                   height={48}
                   className="rounded-full object-cover"
@@ -65,20 +67,21 @@ const Comment = ({ threadId, currentUserImg, currentUserId }: Props) => {
               <FormControl className="border-none bg-transparent">
                 <Input
                   type="text"
+                  {...field}
                   placeholder="Comment..."
                   className="no-focus text-light-1 outline-none"
-                  {...field}
                 />
               </FormControl>
             </FormItem>
           )}
         />
+
         <Button type="submit" className="comment-form_btn">
           Reply
         </Button>
       </form>
     </Form>
   );
-};
+}
 
 export default Comment;
